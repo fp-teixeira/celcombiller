@@ -252,7 +252,7 @@ def preprocessor_check_adm(*args, **kargs):
     pass
 
 def preprocessors_patch(instance_id=None, data=None, **kargs):
-    user_cant_change = ["admin", "clid", "_id",
+    user_cant_change = ["level", "clid", "_id",
                         "originated_calls", "received_calls"]
     admin_cant_change = ["_id", "originated_calls", "received_calls"]
     if current_user.is_admin():

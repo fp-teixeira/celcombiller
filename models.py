@@ -23,7 +23,7 @@ class User(db.Model):
     __tablename__ = 'users'
 
     _id = db.Column(db.Integer, primary_key=True, nullable=False)
-    admin = db.Column(db.Boolean, nullable=False)
+    level = db.Column(db.Integer, nullable=False) # 0=administrator, 1=users, 2=collaborator
     name = db.Column(db.Unicode, nullable=False)
     address = db.Column(db.Unicode)
     cpf = db.Column(db.Integer, nullable=False,  unique=True)
@@ -41,7 +41,7 @@ class User(db.Model):
    # 
     
     def is_admin(self):
-        return self.admin
+        return (level==0 if True else False)
 
     def is_authenticated(self):
         return True
@@ -81,8 +81,8 @@ class User(db.Model):
             historic_list.append(row2dict(y))
         return historic_list
 
-    def __init__(self, admin, name, cpf, username, password, clid, imsi, voice_balance=None, data_balance=None, address=None):
-        self.admin = admin
+    def __init__(self, level, name, cpf, username, password, clid, imsi, voice_balance=None, data_balance=None, address=None):
+        self.level = level
         self.name = name
         self.address = address
         self.cpf = cpf
