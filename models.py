@@ -38,7 +38,8 @@ class User(db.Model):
    # city = db.Column(db.Unicode)
    # state = db.Column(db.Unicode)
    # postalcode = db.Column(db.Integer)
-
+   # 
+    
     def is_admin(self):
         return (level==0 if True else False)
 
