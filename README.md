@@ -59,7 +59,7 @@ curl -c cookiefile -d "username=admin&password=adm123" -X POST -s http://localho
 now to add user:
 
 ```bash
-curl -b cookiefile -H "Content-Type: application/json" -X POST -d '{"username":"yourusername","password":"yourpassword","clid":"999999999","imsi":"12345678900", "admin":'false', "name":"administrator","adress":"lasse","cpf":"000","voice_balance":"0","data_balance":"0"}' -s http://localhost:5000/api/users
+curl -b cookiefile -H "Content-Type: application/json" -X POST -d '{"username":"yourusername","password":"yourpassword","clid":"999999999","imsi":"12345678900", "admin":'false', "name":"administrator","address":"lasse","cpf":"000","voice_balance":"0","data_balance":"0"}' -s http://localhost:5000/api/users
 ```
 
 the balance came by another table, so we want add balance to user we need run:
