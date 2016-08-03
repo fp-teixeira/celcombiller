@@ -1,5 +1,5 @@
 import flask
-from flask import request, flash, render_template, abort
+from flask import request, flash, render_template
 from config import db, app, login_manager
 from models import User, VoiceBalance, DataBalance, Schedules, ScheduleInput, \
     ScheduleUser
@@ -27,15 +27,11 @@ def index():
     except Exception:
         return render_template('anonymous.html')
 
-
-@app.route('/test', methods=['GET'])
-@login_required
+@app.route('/test',methods=['GET'])
 def test():
     return "rodou"
 
 # Login, if the user does not exist it returs a error page
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -49,41 +45,14 @@ def login():
             flash('Username or Password is invalid', 'error')
             return render_template('ERROR.html')
         if login_user(registered_user):
-            return "Hello, cross-origin-world! " + current_user.name
+            return "Hello, cross-origin-world!"
         else:
             flash('Flask Login error', 'error')
             return render_template('ERROR.html')
         # json_with_names = check_time()
 
 
-@login_manager.request_loader
-def load_user_from_request(request):
-
-    # first, try to login using the api_key url arg
-    api_key = request.args.get('api_key')
-    if api_key:
-        user = User.query.filter_by(api_key=api_key).first()
-        if user:
-            return user
-
-    # next, try to login using Basic Auth
-    api_key = request.headers.get('Authorization')
-    if api_key:
-        api_key = api_key.replace('Basic ', '', 1)
-        try:
-            api_key = base64.b64decode(api_key)
-        except TypeError:
-            pass
-        user = User.query.filter_by(api_key=api_key).first()
-        if user:
-            return user
-
-    # finally, return None if both methods did not login the user
-    return None
-
 # Returns the user data balance
-
-
 @app.route('/check_data_balance', methods=['GET', 'POST'])
 def check_data_balance(*args, **kargs):
     data = request.data
@@ -272,7 +241,7 @@ def auth(*args, **kargs):
     """
     Required API request to be authenticated
     """
-    # if not current_user.is_authenticated():
+    #if not current_user.is_authenticated():
     #    raise ProcessingException(description='Not authenticated', code=401)
     pass
 
@@ -281,7 +250,6 @@ def preprocessor_check_adm(*args, **kargs):
    # if not current_user.is_admin():
    #     raise ProcessingException(description='Forbidden', code=403)
     pass
-
 
 def preprocessors_patch(instance_id=None, data=None, **kargs):
     user_cant_change = ["level", "clid", "_id",
@@ -303,35 +271,6 @@ def preprocessors_check_adm_or_normal_user(instance_id=None, **kargs):
     if not (current_user.is_admin() or current_user.username == instance_id):
         raise ProcessingException(description='Forbidden', code=403)
 
-
-def new_user(*args, **kargs):
-    data = request.data
-    request_body = json.loads(data)
-    username = request_body['username']
-    password = request_body['password']
-    cpf = request_body['cpf']
-    clid = request_body['clid']
-    imsi = request_body['imsi']
-
-    if username is None or password is None:
-        abort(409)  # missing arguments
-    if User.query.filter_by(username=username).first() is not None:
-        abort(409)  # existing user
-    if User.query.filter_by(cpf=cpf).first() is not None:
-        abort(409)  # existing user
-    if User.query.filter_by(clid=clid).first() is not None:
-        abort(409)  # existing user
-    if User.query.filter_by(imsi=imsi).first() is not None:
-        abort(409)  # existing user
-
-    # user = User(username = username)
-    # user.hash_password(password)
-    # db.session.add(user)
-    # db.session.commit()
-    # return jsonify({ 'username': user.username }), 201, {'Location':
-    # url_for('get_user', id = user.id, _external = True)}
-
-
 manager = flask.ext.restless.APIManager(app, flask_sqlalchemy_db=db)
 
 # Create the Flask-Restless API manager.
@@ -344,7 +283,6 @@ manager.create_api(
         'POST': [
             # auth,
             # preprocessor_check_adm
-            new_user,
         ],
         'GET_MANY': [
             # auth,
@@ -437,7 +375,7 @@ manager.create_api(
     VoiceBalance,
     preprocessors={
         'POST': [
-            # preprocessor_check_adm,
+           #preprocessor_check_adm,
             # date_now
         ],
         'GET_MANY': [
