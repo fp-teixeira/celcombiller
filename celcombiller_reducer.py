@@ -8,9 +8,8 @@ celcombiller AGI:
 # pylint: disable=C0103
 from datetime import datetime
 import asterisk.agi
-#from asterisk.agi import AGIAppError
 from models import User
-from config import adm_user,adm_pssw
+from config import adm_user, adm_pssw
 import requests
 import json
 
@@ -32,31 +31,23 @@ if agi.get_variable('DIALSTATUS') == 'ANSWER':
     # Create a session
     s = requests.Session()
     # Login the session
-    s.post('http://localhost:5000/login',\
-            data={'username':adm_user, 'password': adm_pssw})
+    s.post(
+        'http://localhost:5000/login',
+        data={'username': adm_user, 'password': adm_pssw}
+    )
 
-    # Create a new CDR record
-    payload = '{"answer":"'+ str(answer)+'", "billsec":"'+ \
-            str(billsec)+'", "from_user_id": '+\
-            str(from_user.id_)+', "to_user_id":'+ str(to_user.id_)+'}'
+    payload = {'from_user_id':from_user.get_id,
+                'to_user_id':to_user.get_id,
+                'value':billsec*(-1),
+                'origin':'call',
+                'date':answer}
 
-    #Send the requestto update the user balance
-    r = s.post('http://localhost:5000/api/cdr', json=json.loads(payload),\
-            headers={'content-type': 'application/json'})
+    # Send the request to update the user balance
+    r = s.post('http://localhost:5000/api/voice_balance',
+               json=payload,
+               headers={'content-type': 'application/json'})
 
-    #TODO: Handle when the request fail
-    if r.ok == False:
-        pass
-
-    payload = '{"signal":"-", "type_":"decrease", "value": "'+ str(billsec) +\
-            '", "userId":'+ str(from_user.id_) +'}'
-
-    # Send the requestto update the user balance
-    r = s.post('http://localhost:5000/api/balance',\
-            json=json.loads(payload),\
-            headers={'content-type': 'application/json'})
-
-    #TODO: Handle when the request fail
-    if r.ok == False:
+    # TODO: Handle when the request fail
+    if r.ok is False:
         pass
     s.close()

@@ -1,3 +1,11 @@
+
+CELCOMBiller
+============
+
+CELCOMBiller is an open source biller system to *OpenBTS* and *Asterisk*
+
+
+
 # Used third-party libraries
 
 * pyst
@@ -10,7 +18,7 @@
 ```bash
 $ virtualenv -p /usr/bin/python2.7 venv
 $ source venv/bin/activate
-$ pip install --allow-external pyst --allow-unverified pyst -r requirements.txt
+$ pip install --allow-external --allow-unverified -r requirements.txt
 ```
 
 ## Database setup
@@ -42,7 +50,7 @@ To test the api we will use curl
 
 ###USER
 
-login is required to test:
+you must login before test the api:
 
 ```bash
 curl -c cookiefile -d "username=admin&password=adm123" -X POST -s http://localhost:5000/login
@@ -56,19 +64,25 @@ curl -b cookiefile -H "Content-Type: application/json" -X POST -d '{"username":"
 
 the balance came by another table, so we want add balance to user we need run:
 
-add balance:
+add/remove data balance:
 
 ```bash
-curl -b cookiefile -H "Content-Type: application/json" -X POST -d '{"signal":"+", "type_":"increase", "value": "1000", "userId":1,"balance":"voice"}' -s http://localhost:5000/api/balance
+curl -b cookiefile -H "Content-Type: application/json" -X POST -d '{"value": "1000", "user_id":3,"origin":"web"}' -s http://localhost:5000/api/data_balance
+
 
 #note that userId need some user id, in that case we use 1
+#to remove balance the value must be negative
 ```
 
-remove balance:
+add/remove voice balance:
 
 ```bash
-curl -b cookiefile -H "Content-Type: application/json" -X POST -d '{"signal":"+", "type_":"increase", "value": "1000", "userId":1, "balance":"voice"}' -s http://localhost:5000/api/balance
+curl -b cookiefile -H "Content-Type: application/json" -X POST -d '{"value": "1000", "userId":1}' -s http://localhost:5000/api/voice_balance
+
+#note that userId need some user id, in that case we use 1
+#to remove balance the value must be negative
 ```
+
 
 update user
 
@@ -82,18 +96,18 @@ remove user
 curl -X DELETE -s http://localhost:5000/api/users/yourusername -b cookiefile
 ```
 
-###GROUPS
+###Schedule
 
 add group
 
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{"name":"group_name","day":1, "month":1, "year":3000, "count":10, "users":[id_]}' -s http://localhost:5000/api/groups
+curl -X POST -H "Content-Type: application/json" -d '{"name":"group_name","day":1, "month":1, "year":3000, "count":10}' -s http://localhost:5000/api/schedules
 ```
 
 update group
 
 ```bash
-curl -X PATCH -H "Content-Type: application/json" -d '{}' -s http://localost:5000/api/groups/group_name
+curl -X PATCH -H "Content-Type: application/json" -d '{}' -s http://localost:5000/api/schedules/schedule
 ```
 
 
