@@ -1,20 +1,17 @@
-import flask
-import flask.ext.sqlalchemy
-import flask.ext.restless
-from flask.ext.login import LoginManager
+from datetime import datetime
 
-#adm login and password
-adm_user = 'admin'
-adm_pssw = 'adm123'
+DEBUG = True
 
+PORT_TO_RUN = 5000
 
-# Create the Flask application and the Flask-SQLAlchemy object.
-app = flask.Flask(__name__)
-app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/alph.db' 
+SCHEDULE_VERIFICATION_TIME = "00:30"
 
-db = flask.ext.sqlalchemy.SQLAlchemy(app)
+# In a new system when the schedule should start?
+FIRS_DATETIME = datetime(2016, 7, 2)
 
-app.secret_key = 'abrakadabra'
-login_manager = LoginManager()
-login_manager.init_app(app)
+PATH_TO_DATABASE = './alph.db'
+
+SECRET_KEY = 'abrakadabra'
+
+NODE_MANAGER_ADDRESS = '127.0.0.1'
+NODE_MANAGER_PORT = '45064'

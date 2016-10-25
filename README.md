@@ -1,3 +1,11 @@
+
+CELCOMBiller
+============
+
+CELCOMBiller is an open source biller system to *OpenBTS* and *Asterisk*
+
+
+
 # Used third-party libraries
 
 * pyst
@@ -10,7 +18,7 @@
 ```bash
 $ virtualenv -p /usr/bin/python2.7 venv
 $ source venv/bin/activate
-$ pip install --allow-external pyst --allow-unverified pyst -r requirements.txt
+$ pip install --allow-external --allow-unverified -r requirements.txt
 ```
 
 ## Database setup
@@ -20,11 +28,11 @@ Each SIP user must be inserted in the database of users with a balance. The pyth
 ```python
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
-from config import db
+from setup import db
 from models import User, Ballance
 
-admin = User(True,'administrator', 'nowhere', '000','admin', 'adm123', '999999999','999999999999999', '0' ,'0')
-guest = User(True,'guest', 'nowhere', '1','guest', '123123', '999999998','999999999999998', '0' ,'0')
+admin = User('0','administrator', 'nowhere', '000','admin', 'adm123', '999999999','999999999999999', '0' ,'0')
+guest = User('0','guest', 'nowhere', '1','guest', '123123', '999999998','999999999999998', '0' ,'0')
 
 db.session.add(admin)
 db.session.add(guest)
@@ -42,7 +50,7 @@ To test the api we will use curl
 
 ###USER
 
-login is required to test:
+you must login before test the api:
 
 ```bash
 curl -c cookiefile -d "username=admin&password=adm123" -X POST -s http://localhost:5000/login
@@ -51,24 +59,30 @@ curl -c cookiefile -d "username=admin&password=adm123" -X POST -s http://localho
 now to add user:
 
 ```bash
-curl -b cookiefile -H "Content-Type: application/json" -X POST -d '{"username":"yourusername","password":"yourpassword","clid":"999999999","imsi":"12345678900", "admin":'false', "name":"administrator","adress":"lasse","cpf":"000","voice_balance":"0","data_balance":"0"}' -s http://localhost:5000/api/users
+curl -b cookiefile -H "Content-Type: application/json" -X POST -d '{"level":"1", "username":"yourusername","password":"yourpassword","clid":"999999999","imsi":"12345678900", "name":"administrator","address":"lasse","cpf":"000","voice_balance":"0","data_balance":"0"}' -s http://localhost:5000/api/users
 ```
 
 the balance came by another table, so we want add balance to user we need run:
 
-add balance:
+add/remove data balance:
 
 ```bash
-curl -b cookiefile -H "Content-Type: application/json" -X POST -d '{"signal":"+", "type_":"increase", "value": "1000", "userId":1,"balance":"voice"}' -s http://localhost:5000/api/balance
+curl -b cookiefile -H "Content-Type: application/json" -X POST -d '{"value": "1000", "user_id":3,"origin":"web"}' -s http://localhost:5000/api/data_balance
+
 
 #note that userId need some user id, in that case we use 1
+#to remove balance the value must be negative
 ```
 
-remove balance:
+add/remove voice balance:
 
 ```bash
-curl -b cookiefile -H "Content-Type: application/json" -X POST -d '{"signal":"+", "type_":"increase", "value": "1000", "userId":1, "balance":"voice"}' -s http://localhost:5000/api/balance
+curl -b cookiefile -H "Content-Type: application/json" -X POST -d '{"value": "1000", "from_user_id":1, "origin":"web"}' -s http://localhost:5000/api/voice_balance
+
+#note that userId need some user id, in that case we use 1
+#to remove balance the value must be negative
 ```
+
 
 update user
 
@@ -82,18 +96,18 @@ remove user
 curl -X DELETE -s http://localhost:5000/api/users/yourusername -b cookiefile
 ```
 
-###GROUPS
+###Schedule
 
 add group
 
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{"name":"group_name","day":1, "month":1, "year":3000, "count":10, "users":[id_]}' -s http://localhost:5000/api/groups
+curl -X POST -H "Content-Type: application/json" -d '{"name":"group_name","day":1, "month":1, "year":3000, "count":10}' -s http://localhost:5000/api/schedules
 ```
 
 update group
 
 ```bash
-curl -X PATCH -H "Content-Type: application/json" -d '{}' -s http://localost:5000/api/groups/group_name
+curl -X PATCH -H "Content-Type: application/json" -d '{}' -s http://localost:5000/api/schedules/schedule
 ```
 
 
